@@ -10,6 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/sleumas2000/agora.git"
   },
+  "dependencies": {
+    "express": "~4.0.0",
+    "body-parser": "~1.0.1"
+  },
   "keywords": [
     "agora",
     "voting",
