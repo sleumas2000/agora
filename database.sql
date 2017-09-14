@@ -56,6 +56,7 @@ CREATE TABLE Elections (
 
 CREATE TABLE Votes (
 	VoteID int not null primary key auto_increment,
+  Timestamp timestamp,
   UserID int not null,
   ElectionID int not null,
   SystemID int not null,
