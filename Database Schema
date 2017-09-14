@@ -1,0 +1,55 @@
+Users:
+	UserID [primary]
+	Username {varchar(40)}
+	Email {varchar(254)}
+	Surname {varchar(50})
+	Forename {varchar(50)}
+	Preferred Name {varchar(50)}
+Groups:
+	GroupID [primary]
+	Name {varchar(50)}
+	GroupTypeID [foreign]
+GroupTypes:
+	GroupTypeID [primary]
+	Name {varchar(50)}
+LinkGroupsUsers:
+	LinkID [primary]
+	GroupID [foreign]
+	UserID [foreign]
+Votes:
+	VoteID [primary]
+	UserID [foreign]
+	ElectionID [foreign]
+	SystemID [foreign]
+	CandidateID [foreign]
+	Score {int}
+Candidates:
+	CandidateID [primary]
+	Name {varchar(100)}
+	PartyID [foreign]
+LinkCandidatesElections:
+	LinkID [primary]
+	CandidateID [foreign]
+	ElectionID [foreign]
+	PartyID [foreign]
+Parties:
+	PartyID [primary]
+	Name {varchar(100)}
+  PathToLogo {varchar(256)}
+Elections:
+	ElectionID [primary]
+  Name {varchar(50)}
+Systems:
+	SystemID [primary]
+LinkElectionsSystems:
+	LinkID [primary]
+	ElectionID [foreign]
+	SystemID [foreign]
+LinkElectionsCandidates:
+  LinkID [primary]
+  ElectionID [foreign]
+  CandidateID [foreign]
+LinkElectionsGroups:
+  LinkID [primary]
+  ElectionID [foreign]
+  GroupID [foreign]
