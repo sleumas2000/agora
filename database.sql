@@ -1,13 +1,14 @@
 CREATE DATABASE IF NOT EXISTS Agora;
-use Agora;
+USE Agora;
 
 CREATE TABLE Users (
 	UserID int not null primary key auto_increment,
-	Username varchar(40) not null,
-	Email varchar(254) not null,
+	Username varchar(50) not null,
+	Email varchar(254) unique not null,
 	Surname varchar(50),
 	Forename varchar(50),
-	PreferredName varchar(50)
+	PreferredName varchar(50),
+  DisplayName varchar(100) not null
 );
 
 CREATE TABLE GroupTypes (
@@ -17,7 +18,7 @@ CREATE TABLE GroupTypes (
 
 CREATE TABLE Groups (
 	GroupID int not null primary key auto_increment,
-	Name varchar(50),
+	Name varchar(50) unique not null,
 	GroupTypeID int not null,
 	FOREIGN KEY (GroupTypeID) REFERENCES GroupTypes(GroupTypeID)
 );
