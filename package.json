@@ -11,8 +11,9 @@
     "url": "git+https://github.com/sleumas2000/agora.git"
   },
   "dependencies": {
-    "express": "~4.0.0",
     "body-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "morgan": "^1.8.2",
     "mysql": "~2.14.1"
   },
   "keywords": [
