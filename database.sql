@@ -3,7 +3,7 @@ USE Agora;
 
 CREATE TABLE Users (
 	UserID int not null primary key auto_increment,
-	Username varchar(50) not null,
+	Username varchar(50) unique not null,
 	Email varchar(254) unique not null,
 	Surname varchar(50),
 	Forename varchar(50),
@@ -19,7 +19,7 @@ CREATE TABLE GroupTypes (
 CREATE TABLE Groups (
 	GroupID int not null primary key auto_increment,
 	Name varchar(50) unique not null,
-	GroupTypeID int not null,
+	GroupTypeID int,
 	FOREIGN KEY (GroupTypeID) REFERENCES GroupTypes(GroupTypeID)
 );
 
@@ -27,8 +27,9 @@ CREATE TABLE LinkGroupsUsers (
 	LinkID int not null primary key auto_increment,
 	GroupID int not null,
 	UserID int not null,
-	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID),
-	FOREIGN KEY (UserID) REFERENCES Users(UserID)
+	FOREIGN KEY (GroupID) REFERENCES Groups(GroupID),
+	FOREIGN KEY (UserID) REFERENCES Users(UserID),
+	UNIQUE LINK (GroupID, UserID)
 );
 
 CREATE TABLE Parties (
@@ -39,8 +40,7 @@ CREATE TABLE Parties (
 
 CREATE TABLE Candidates (
 	CandidateID int not null primary key auto_increment,
-	Name varchar(100) not null,
-	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID)
+	Name varchar(100) not null
 );
 
 CREATE TABLE Systems (
@@ -74,7 +74,8 @@ CREATE TABLE LinkCandidatesElections (
 	PartyID int,
 	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
-	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID)
+	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID),
+	UNIQUE LINK (CandidateID, ElectionID)
 );
 
 CREATE TABLE LinkElectionsSystems (
@@ -82,15 +83,8 @@ CREATE TABLE LinkElectionsSystems (
 	ElectionID int not null,
 	SystemID int not null,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
-	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID)
-);
-
-CREATE TABLE LinkElectionsCandidates (
-	LinkID int not null primary key auto_increment,
-	ElectionID int not null,
-	CandidateID int not null,
-	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
-	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID)
+	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
+	UNIQUE LINK (ElectionID, SystemID)
 );
 
 CREATE TABLE LinkElectionsGroups (
@@ -98,5 +92,6 @@ CREATE TABLE LinkElectionsGroups (
 	ElectionID int not null,
 	GroupID int not null,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
-	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID)
+	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID),
+	UNIQUE LINK (ElectionID, GroupID)
 );
