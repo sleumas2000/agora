@@ -487,4 +487,4 @@ app.delete('/elections/:electionID', function(req, res){
 });
 
 app.listen(PORT);
-console.log("Webserver started on localhost:"+PORT+)
+console.log("Webserver started on localhost:"+PORT)
