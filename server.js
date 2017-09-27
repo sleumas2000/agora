@@ -159,7 +159,7 @@ app.post('/users/groups/:groupID/users', function(req, res){
 app.delete('/users/groups/:groupID/users/:userID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [req.params.userID, req.params.groupID], function(err, results, fields){
+    pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [parseInt(req.params.userID), parseInt(req.params.groupID)], function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -173,13 +173,13 @@ app.delete('/users/groups/:groupID/users/:userID', function(req, res){
 });
 
 app.get('/users/:userID', function(req, res){
-  pool.query('SELECT * FROM USERS WHERE USERID = ' + req.params.userID, function (err, results, fields){
+  pool.query('SELECT * FROM USERS WHERE USERID = ?', parseInt(req.params.userID), function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/users/:userID', function(req, res){
-  pool.query('UPDATE USERS SET ? WHERE USERID = ' + req.params.userID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE USERS SET ? WHERE USERID = ?', parseInt(req.params.userID) , req.body, function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -191,7 +191,7 @@ app.post('/users/:userID', function(req, res){
 app.delete('/users/:userID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM USERS WHERE USERID = ' + req.params.userID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM USERS WHERE USERID = ?', parseInt(req.params.userID), function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -205,7 +205,7 @@ app.delete('/users/:userID', function(req, res){
 });
 
 app.post('/users/:userID/groups', function(req, res){
-  pool.query('INSERT INTO LINKGROUPSUSERS SET USERID = ? ?', [req.params.userID, req.body], function(err, results, fields){
+  pool.query('INSERT INTO LINKGROUPSUSERS SET USERID = ?, ?', [parseInt(req.params.userID), req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(409).json(req.body)
@@ -215,7 +215,7 @@ app.post('/users/:userID/groups', function(req, res){
   });
 });
 app.get('/users/:userID/groups', function(req, res){
-  pool.query('SELECT * FROM LINKGROUPSUSERS WHERE USERID = ?', req.params.userID, function (err, results, fields){
+  pool.query('SELECT * FROM LINKGROUPSUSERS WHERE USERID = ?', parseInt(req.params.userID), function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -223,7 +223,7 @@ app.get('/users/:userID/groups', function(req, res){
 app.delete('/users/:userID/groups/:groupID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [req.params.userID, req.params.groupID], function(err, results, fields){
+    pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [parseInt(req.params.userID), parseInt(req.params.groupID)], function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -255,13 +255,13 @@ app.post('/votes', function(req, res){
 });
 
 app.get('/votes/:voteID', function(req, res){
-  pool.query('SELECT * FROM VOTES WHERE VOTEID = ' + req.params.voteID, function (err, results, fields){
+  pool.query('SELECT * FROM VOTES WHERE VOTEID = ?', req.params.voteID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/votes/:voteID', function(req, res){
-  pool.query('UPDATE VOTES SET ? WHERE VOTEID = ' + req.params.voteID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE VOTES SET ? WHERE VOTEID = ?', [req.params.voteID, req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -273,7 +273,7 @@ app.post('/votes/:voteID', function(req, res){
 app.delete('/votes/:voteID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM VOTES WHERE VOTEID = ' + req.params.voteID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM VOTES WHERE VOTEID = ?', req.params.voteID, function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -305,13 +305,13 @@ app.post('/parties', function(req, res){
 });
 
 app.get('/parties/:partyID', function(req, res){
-  pool.query('SELECT * FROM PARTIES WHERE PARTYID = ' + req.params.partyID, function (err, results, fields){
+  pool.query('SELECT * FROM PARTIES WHERE PARTYID = ?', req.params.partyID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/parties/:partyID', function(req, res){
-  pool.query('UPDATE PARTIES SET ? WHERE PARTYID = ' + req.params.partyID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE PARTIES SET ? WHERE PARTYID = ?', [req.params.partyID, req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -323,7 +323,7 @@ app.post('/parties/:partyID', function(req, res){
 app.delete('/parties/:partyID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM PARTIES WHERE PARTYID = ' + req.params.partyID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM PARTIES WHERE PARTYID = ?', req.params.partyID, function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -355,13 +355,13 @@ app.post('/candidates', function(req, res){
 });
 
 app.get('/candidates/:candidateID', function(req, res){
-  pool.query('SELECT * FROM CANDIDATES WHERE CANDIDATEID = ' + req.params.candidateID, function (err, results, fields){
+  pool.query('SELECT * FROM CANDIDATES WHERE CANDIDATEID = ?', req.params.candidateID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/candidates/:candidateID', function(req, res){
-  pool.query('UPDATE CANDIDATES SET ? WHERE CANDIDATEID = ' + req.params.candidateID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE CANDIDATES SET ? WHERE CANDIDATEID = ?', [req.params.candidateID, req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -373,7 +373,7 @@ app.post('/candidates/:candidateID', function(req, res){
 app.delete('/candidates/:candidateID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM CANDIDATES WHERE CANDIDATEID = ' + req.params.candidateID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM CANDIDATES WHERE CANDIDATEID = ?', req.params.candidateID, function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -405,13 +405,13 @@ app.post('/systems', function(req, res){
 });
 
 app.get('/systems/:systemID', function(req, res){
-  pool.query('SELECT * FROM SYSTEMS WHERE SYSTEMID = ' + req.params.systemID, function (err, results, fields){
+  pool.query('SELECT * FROM SYSTEMS WHERE SYSTEMID = ?', req.params.systemID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/systems/:systemID', function(req, res){
-  pool.query('UPDATE SYSTEMS SET ? WHERE SYSTEMID = ' + req.params.systemID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE SYSTEMS SET ? WHERE SYSTEMID = ?', [req.params.systemID, req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -423,7 +423,7 @@ app.post('/systems/:systemID', function(req, res){
 app.delete('/systems/:systemID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM SYSTEMS WHERE SYSTEMID = ' + req.params.systemID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM SYSTEMS WHERE SYSTEMID = ?', req.params.systemID, function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -455,13 +455,13 @@ app.post('/elections', function(req, res){
 });
 
 app.get('/elections/:electionID', function(req, res){
-  pool.query('SELECT * FROM ELECTIONS WHERE ELECTIONID = ' + req.params.electionID, function (err, results, fields){
+  pool.query('SELECT * FROM ELECTIONS WHERE ELECTIONID = ?', req.params.electionID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
 });
 app.post('/elections/:electionID', function(req, res){
-  pool.query('UPDATE ELECTIONS SET ? WHERE ELECTIONID = ' + req.params.electionID  + ';', req.body, function(err, results, fields){
+  pool.query('UPDATE ELECTIONS SET ? WHERE ELECTIONID = ?', [req.params.electionID, req.body], function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(404).json(req.body)
@@ -473,7 +473,7 @@ app.post('/elections/:electionID', function(req, res){
 app.delete('/elections/:electionID', function(req, res){
   console.log(req.body)
   if (req.body['confirm'] == 'delete') {
-    pool.query('DELETE FROM ELECTIONS WHERE ELECTIONID = ' + req.params.electionID  + ';', function(err, results, fields){
+    pool.query('DELETE FROM ELECTIONS WHERE ELECTIONID = ?', req.params.electionID, function(err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
@@ -487,3 +487,4 @@ app.delete('/elections/:electionID', function(req, res){
 });
 
 app.listen(PORT);
+console.log("Webserver started on localhost:"+PORT+)
