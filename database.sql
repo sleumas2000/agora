@@ -13,12 +13,12 @@ CREATE TABLE Users (
 
 CREATE TABLE GroupTypes (
 	GroupTypeID int not null primary key auto_increment,
-	Name varchar(50) not null
+	GroupTypeName varchar(50) not null
 );
 
 CREATE TABLE Groups (
 	GroupID int not null primary key auto_increment,
-	Name varchar(50) unique not null,
+	GroupName varchar(50) unique not null,
 	GroupTypeID int,
 	FOREIGN KEY (GroupTypeID) REFERENCES GroupTypes(GroupTypeID)
 );
@@ -40,17 +40,17 @@ CREATE TABLE Parties (
 
 CREATE TABLE Candidates (
 	CandidateID int not null primary key auto_increment,
-	Name varchar(100) not null
+	CandidateName varchar(100) not null
 );
 
 CREATE TABLE Systems (
 	SystemID int not null primary key auto_increment,
-	Name varchar(50) not null unique
+	SystemName varchar(50) not null unique
 );
 
 CREATE TABLE Elections (
 	ElectionID int not null primary key auto_increment,
-	Name varchar(50) unique not null
+	ElectionName varchar(50) unique not null
 );
 
 CREATE TABLE Votes (

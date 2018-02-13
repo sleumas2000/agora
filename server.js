@@ -179,9 +179,22 @@ app.delete(API_STEM_V1+'/users/groups/:groupID/users/:userID', function(req, res
 });
 
 app.get(API_STEM_V1+'/users/:userID', function(req, res){
+  var response={}
   pool.query('SELECT * FROM USERS WHERE USERID = ?', parseInt(req.params.userID), function (err, results, fields){
     if (err) console.log(err);
-    res.json(results[0]);
+    response=(results[0]);
+    console.log(results[0])
+    pool.query(
+      'SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName \
+      FROM LinkGroupsUsers LEFT JOIN Groups ON LinkGroupsUsers.GroupID = Groups.GroupID \
+      LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID WHERE UserID = ?',
+    parseInt(req.params.userID), function (err, results, fields) {
+      if (err) console.log(err);
+      response.Groups=(results);
+      console.log(results)
+      console.log(response)
+      res.json(response)
+    });
   });
 });
 app.post(API_STEM_V1+'/users/:userID', function(req, res){
