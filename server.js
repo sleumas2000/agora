@@ -31,11 +31,33 @@ app.get(API_STEM_V1+'/', function(req, res){
 
 
 app.get(API_STEM_V1+'/users', function(req, res){
-  pool.query('SELECT * FROM USERS', function (err, results, fields){
+  pool.query(  'SELECT * FROM USERS', function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
 });
+app.get(API_STEM_V1+'/users/bygroup/:groupID', function(req, res){
+  pool.query('SELECT Users.* FROM Users INNER JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID AND LinkGroupsUsers.GroupID = ?', req.params.groupID, function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+/*app.get(API_STEM_V1+'/users/full', function(req, res){
+  pool.query(  'SELECT Users.*, Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName \
+  FROM Users \
+  LEFT JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID \
+  LEFT JOIN Groups ON LinkGroupsUsers.GroupID = Groups.GroupID \
+  LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY UserID', function (err, results, fields){
+    if (err) console.log(err);
+    var reponse = []
+    for (var i = 0; i < length(results); i++) {
+      row = results[i]
+      for (key in row):
+      response[i]
+    }
+    res.json(results);
+  });
+});*/
 app.post(API_STEM_V1+'/users', function(req, res){
   pool.query('INSERT INTO USERS SET ?', req.body, function(err, results, fields){
     if (err) {
