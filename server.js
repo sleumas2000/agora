@@ -92,6 +92,13 @@ app.get(API_STEM_V1+'/users/groups/types', function(req, res){
     res.json(results);
   });
 });
+app.get(API_STEM_V1+'/users/groups/bygrouptype/:groupTypeID', function(req, res){
+  console.log(req.params.groupTypeID)
+  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups INNER JOIN GroupTypes ON GroupTypes.GroupTypeID = Groups.GroupTypeID AND Groups.GroupTypeID = ?', req.params.groupTypeID, function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
 app.post(API_STEM_V1+'/users/groups/types', function(req, res){
   pool.query('INSERT INTO GROUPTYPES SET ?', req.body, function(err, results, fields){
     if (err) {
