@@ -47,7 +47,7 @@ app.get(API_STEM_V1+'/users/bygroup/:groupID', function(req, res){
   FROM Users \
   LEFT JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID \
   LEFT JOIN Groups ON LinkGroupsUsers.GroupID = Groups.GroupID \
-  LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY UserID', function (err, results, fields){
+  LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY Users.UserID', function (err, results, fields){
     if (err) console.log(err);
     var reponse = []
     for (var i = 0; i < length(results); i++) {
@@ -70,7 +70,7 @@ app.post(API_STEM_V1+'/users', function(req, res){
 });
 
 app.get(API_STEM_V1+'/users/groups', function(req, res){
-  pool.query('SELECT * FROM GROUPS', function (err, results, fields){
+  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY Groups.GroupTypeID', function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
