@@ -19,7 +19,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(function(req,res,next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader("Access-Control-Allow-Headers", 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  res.setHeader("Access-Control-Allow-Headers", 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, x-confirm-delete');
   next();
 });
 
@@ -37,7 +37,7 @@ app.get(API_STEM_V1+'/users', function(req, res){
     res.json(results);
   });
 });
-app.get(API_STEM_V1+'/users/bygroup/:groupID', function(req, res){
+app.get(API_STEM_V1+'/users/groups/:groupID/members', function(req, res){
   pool.query('SELECT Users.* FROM Users INNER JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID AND LinkGroupsUsers.GroupID = ?', req.params.groupID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
@@ -93,7 +93,7 @@ app.get(API_STEM_V1+'/users/groups/types', function(req, res){
     res.json(results);
   });
 });
-app.get(API_STEM_V1+'/users/groups/bygrouptype/:groupTypeID', function(req, res){
+app.get(API_STEM_V1+'/users/groups/types/:groupTypeID/members', function(req, res){
   console.log(req.params.groupTypeID)
   pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups INNER JOIN GroupTypes ON GroupTypes.GroupTypeID = Groups.GroupTypeID AND Groups.GroupTypeID = ?', req.params.groupTypeID, function (err, results, fields){
     if (err) console.log(err);
@@ -129,7 +129,7 @@ app.post(API_STEM_V1+'/users/groups/types/:grouptypeID', function(req, res){
 });
 app.delete(API_STEM_V1+'/users/groups/types/:grouptypeID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM GROUPTYPES WHERE GROUPTYPEID = ' + req.params.grouptypeID  + ';', function(err, results, fields){
       if (err) {
         console.log(err);
@@ -161,7 +161,7 @@ app.post(API_STEM_V1+'/users/groups/:groupID', function(req, res){
 });
 app.delete(API_STEM_V1+'/users/groups/:groupID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM GROUPS WHERE GROUPID = ' + req.params.groupID  + ';', function(err, results, fields){
       if (err) {
         console.log(err);
@@ -194,7 +194,7 @@ app.post(API_STEM_V1+'/users/groups/:groupID/users', function(req, res){
 });
 app.delete(API_STEM_V1+'/users/groups/:groupID/users/:userID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [parseInt(req.params.userID), parseInt(req.params.groupID)], function(err, results, fields){
       if (err) {
         console.log(err);
@@ -239,7 +239,7 @@ app.post(API_STEM_V1+'/users/:userID', function(req, res){
 });
 app.delete(API_STEM_V1+'/users/:userID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM USERS WHERE USERID = ?', parseInt(req.params.userID), function(err, results, fields){
       if (err) {
         console.log(err);
@@ -249,6 +249,8 @@ app.delete(API_STEM_V1+'/users/:userID', function(req, res){
       };
     });
   } else {
+    console.log(req.headers)
+    console.log(req.headers['x-confirm-delete'])
     res.status(403).json(req.body);
   }
 });
@@ -271,7 +273,7 @@ app.get(API_STEM_V1+'/users/:userID/groups', function(req, res){
 });
 app.delete(API_STEM_V1+'/users/:userID/groups/:groupID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM LINKGROUPSUSERS WHERE USERID = ? AND GROUPID = ?', [parseInt(req.params.userID), parseInt(req.params.groupID)], function(err, results, fields){
       if (err) {
         console.log(err);
@@ -321,7 +323,7 @@ app.post(API_STEM_V1+'/votes/:voteID', function(req, res){
 });
 app.delete(API_STEM_V1+'/votes/:voteID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM VOTES WHERE VOTEID = ?', req.params.voteID, function(err, results, fields){
       if (err) {
         console.log(err);
@@ -371,7 +373,7 @@ app.post(API_STEM_V1+'/parties/:partyID', function(req, res){
 });
 app.delete(API_STEM_V1+'/parties/:partyID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM PARTIES WHERE PARTYID = ?', req.params.partyID, function(err, results, fields){
       if (err) {
         console.log(err);
@@ -421,7 +423,7 @@ app.post(API_STEM_V1+'/candidates/:candidateID', function(req, res){
 });
 app.delete(API_STEM_V1+'/candidates/:candidateID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM CANDIDATES WHERE CANDIDATEID = ?', req.params.candidateID, function(err, results, fields){
       if (err) {
         console.log(err);
@@ -471,7 +473,7 @@ app.post(API_STEM_V1+'/systems/:systemID', function(req, res){
 });
 app.delete(API_STEM_V1+'/systems/:systemID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM SYSTEMS WHERE SYSTEMID = ?', req.params.systemID, function(err, results, fields){
       if (err) {
         console.log(err);
@@ -521,7 +523,7 @@ app.post(API_STEM_V1+'/elections/:electionID', function(req, res){
 });
 app.delete(API_STEM_V1+'/elections/:electionID', function(req, res){
   console.log(req.body)
-  if (req.body['confirm'] == 'delete') {
+  if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM ELECTIONS WHERE ELECTIONID = ?', req.params.electionID, function(err, results, fields){
       if (err) {
         console.log(err);
