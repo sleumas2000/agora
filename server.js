@@ -38,7 +38,7 @@ app.get(API_STEM_V1+'/users', function(req, res){
   });
 });
 app.get(API_STEM_V1+'/users/groups/:groupID/members', function(req, res){
-  pool.query('SELECT Users.* FROM Users INNER JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID AND LinkGroupsUsers.GroupID = ?', req.params.groupID, function (err, results, fields){
+  pool.query('SELECT Users.* FROM Users INNER JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID AND LinkGroupsUsers.GroupID = ? ORDER BY Users.UserID', req.params.groupID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -71,7 +71,7 @@ app.post(API_STEM_V1+'/users', function(req, res){
 });
 
 app.get(API_STEM_V1+'/users/groups', function(req, res){
-  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY Groups.GroupTypeID', function (err, results, fields){
+  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups LEFT JOIN GroupTypes ON Groups.GroupTypeID = GroupTypes.GroupTypeID ORDER BY Groups.GroupTypeID, Groups.GroupName', function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -95,7 +95,7 @@ app.get(API_STEM_V1+'/users/groups/types', function(req, res){
 });
 app.get(API_STEM_V1+'/users/groups/types/:groupTypeID/members', function(req, res){
   console.log(req.params.groupTypeID)
-  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups INNER JOIN GroupTypes ON GroupTypes.GroupTypeID = Groups.GroupTypeID AND Groups.GroupTypeID = ?', req.params.groupTypeID, function (err, results, fields){
+  pool.query('SELECT Groups.GroupID, Groups.GroupName, GroupTypes.GroupTypeName FROM Groups INNER JOIN GroupTypes ON GroupTypes.GroupTypeID = Groups.GroupTypeID AND Groups.GroupTypeID = ? ORDER BY Groups.GroupName', req.params.groupTypeID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -507,6 +507,24 @@ app.post(API_STEM_V1+'/elections', function(req, res){
 
 app.get(API_STEM_V1+'/elections/:electionID', function(req, res){
   pool.query('SELECT * FROM ELECTIONS WHERE ELECTIONID = ?', req.params.electionID, function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results[0]);
+  });
+});
+app.get(API_STEM_V1+'/elections/:electionID/systems', function(req, res){
+  pool.query('SELECT Systems.SystemName, Systems.SystemID, Systems.SystemShortName FROM Systems RIGHT JOIN LinkElectionsSystems ON LinkElectionsSystems.SystemID = Systems.SystemID WHERE LinkElectionsSystems.ElectionID = ?', req.params.electionID, function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+app.get(API_STEM_V1+'/elections/:electionID/candidates', function(req, res){
+  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ?', req.params.electionID, function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+app.get(API_STEM_V1+'/elections/:electionID/candidates/:candidateID', function(req, res){
+  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? AND Candidates.CandidateID = ?', [req.params.electionID, req.params.candidateID], function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
