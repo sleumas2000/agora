@@ -518,7 +518,7 @@ app.get(API_STEM_V1+'/elections/:electionID/systems', function(req, res){
   });
 });
 app.get(API_STEM_V1+'/elections/:electionID/candidates', function(req, res){
-  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ?', req.params.electionID, function (err, results, fields){
+  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY Candidates.CandidateName', req.params.electionID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
