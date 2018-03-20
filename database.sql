@@ -66,7 +66,7 @@ CREATE TABLE Votes (
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
 	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
 	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
-	Score int
+	Position int
 );
 
 CREATE TABLE LinkCandidatesElections (
