@@ -287,6 +287,23 @@ app.delete(API_STEM_V1+'/users/:userID/groups/:groupID', function(req, res){
   }
 });
 
+app.post(API_STEM_V1+'/elections/:electionID/systems/:systemShortName/votes/user/:userID', function(req, res){
+  pool.query('SELECT SystemID FROM Systems WHERE SystemShortName = ?', req.params.systemShortName, function(err, results, fields) {
+    if (results.length != 1 || typeof(results[0].SystemID) == 'undefined') {
+      res.status(404).json(req.body);
+    }
+    pool.query('INSERT INTO Votes SET UserID = ?, ElectionID = ?, SystemID = ?, ?', [parseInt(req.params.userID), parseInt(req.params.electionID), parseInt(results[0].SystemID), req.body], function(err, results, fields){
+      if (err) {
+        console.log(err);
+        res.status(409).json(req.body);
+      } else {
+        res.status(201).json(req.body);
+      };
+    });
+  });
+});
+
+
 
 app.get(API_STEM_V1+'/votes', function(req, res){
   pool.query('SELECT * FROM VOTES', function (err, results, fields){
