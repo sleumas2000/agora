@@ -61,7 +61,7 @@ CREATE TABLE Votes (
 	UserID int not null,
 	ElectionID int not null,
 	SystemID int not null,
-	CandidateID int not null,
+	CandidateID int,
 	FOREIGN KEY (UserID) REFERENCES Users(UserID),
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
 	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
