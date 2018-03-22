@@ -300,6 +300,19 @@ app.delete(API_STEM_V1+'/users/:userID/groups/:groupID', function(req, res){
   }
 });
 
+app.get(API_STEM_V1+'/elections/:electionID/votes', function(req, res){
+  pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE Votes.ElectionID = ? ORDER BY SystemID, Position, PartyID, CandidateID', parseInt(req.params.electionID), function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+app.get(API_STEM_V1+'/elections/:electionID/votes/group/:groupID', function(req, res){
+  pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN LinkGroupsUsers ON Votes.UserId = LinkGroupsUsers.UserID WHERE Votes.ElectionID = ? AND LinkGroupsUsers.GroupID = ? ORDER BY SystemID, Position, PartyID, CandidateID', [parseInt(req.params.electionID),parseInt(req.params.groupID)], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+
 app.post(API_STEM_V1+'/elections/:electionID/systems/:systemShortName/votes/user/:userID', function(req, res){
   pool.query('SELECT SystemID FROM Systems WHERE SystemShortName = ?', req.params.systemShortName, function(err, results, fields) {
     if (results.length != 1 || typeof(results[0].SystemID) == 'undefined') {
