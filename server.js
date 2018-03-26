@@ -305,6 +305,12 @@ app.get(API_STEM_V1+'/elections/:electionID/votes', function(req, res){
     res.json(results);
   });
 });
+app.get(API_STEM_V1+'/elections/:electionID/parties', function(req, res){
+  pool.query('SELECT Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Parties LEFT JOIN LinkCandidatesElections ON Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY PartyID', parseInt(req.params.electionID), function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
 app.get(API_STEM_V1+'/elections/:electionID/votes/group/:groupID', function(req, res){
   pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN LinkGroupsUsers ON Votes.UserId = LinkGroupsUsers.UserID WHERE Votes.ElectionID = ? AND LinkGroupsUsers.GroupID = ? ORDER BY SystemID, Position, PartyID, CandidateID', [parseInt(req.params.electionID),parseInt(req.params.groupID)], function (err, results, fields){
     if (err) console.log(err);
