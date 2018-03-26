@@ -28,7 +28,6 @@ app.use(function(req,res,next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader("Access-Control-Allow-Headers", 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, X-HTTP-Method-Override');
-    console.log(res)
     res.end()
   } else {
     next();
@@ -300,7 +299,7 @@ app.delete(API_STEM_V1+'/users/:userID/groups/:groupID', function(req, res){
 });
 
 app.get(API_STEM_V1+'/elections/:electionID/votes', function(req, res){
-  pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE Votes.ElectionID = ? ORDER BY SystemID, Position, PartyID, CandidateID', parseInt(req.params.electionID), function (err, results, fields){
+  pool.query('SELECT Votes.VoteID, Votes.SystemID, Systems.SystemShortName, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN Systems on Systems.SystemID = Votes.SystemID WHERE Votes.ElectionID = ? ORDER BY SystemID, Position, PartyID, CandidateID', parseInt(req.params.electionID), function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -312,7 +311,7 @@ app.get(API_STEM_V1+'/elections/:electionID/parties', function(req, res){
   });
 });
 app.get(API_STEM_V1+'/elections/:electionID/votes/group/:groupID', function(req, res){
-  pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN LinkGroupsUsers ON Votes.UserId = LinkGroupsUsers.UserID WHERE Votes.ElectionID = ? AND LinkGroupsUsers.GroupID = ? ORDER BY SystemID, Position, PartyID, CandidateID', [parseInt(req.params.electionID),parseInt(req.params.groupID)], function (err, results, fields){
+  pool.query('SELECT Votes.SystemID, Votes.CandidateID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN LinkGroupsUsers ON Votes.UserId = LinkGroupsUsers.UserID WHERE Votes.ElectionID = ? AND LinkGroupsUsers.GroupID = ? ORDER BY SystemID, Position, PartyID, CandidateID, VoteID', [parseInt(req.params.electionID),parseInt(req.params.groupID)], function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
