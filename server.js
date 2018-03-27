@@ -321,12 +321,12 @@ app.post(API_STEM_V1+'/elections/:electionID/systems/:systemShortName/votes/user
   pool.query('SELECT SystemID FROM Systems WHERE SystemShortName = ?', req.params.systemShortName, function(err, results, fields) {
     if (results.length != 1 || typeof(results[0].SystemID) == 'undefined') {
       res.status(404).json(req.body);
-      console.log(results)
+      console.log(results);
     }
-    delete req.body.systemShortName
-    delete req.body.electionID
-    delete req.body.userID
-    delete req.body.systemID
+    delete req.body.systemShortName;
+    delete req.body.electionID;
+    delete req.body.userID;
+    delete req.body.systemID;
     if (req.body.candidateID == 0) req.body.candidateID = null;
     pool.query('INSERT INTO Votes SET UserID = ?, ElectionID = ?, SystemID = ?, ?', [parseInt(req.params.userID), parseInt(req.params.electionID), parseInt(results[0].SystemID), req.body], function(err, results, fields){
       if (err) {
@@ -334,7 +334,7 @@ app.post(API_STEM_V1+'/elections/:electionID/systems/:systemShortName/votes/user
         res.status(409).json(req.body);
       } else {
         res.status(201).json(req.body);
-      };
+      }
     });
   });
 });
