@@ -299,7 +299,7 @@ app.delete(API_STEM_V1+'/users/:userID/groups/:groupID', function(req, res){
 });
 
 app.get(API_STEM_V1+'/elections/:electionID/votes', function(req, res){
-  pool.query('SELECT Votes.VoteID, Votes.SystemID, Systems.SystemShortName, Votes.CandidateID, Votes.ElectionID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID AND LinkCandidatesElections.ElectionID = ? LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN Systems on Systems.SystemID = Votes.SystemID WHERE Votes.ElectionID = ? ORDER BY SystemID, Position, PartyID, CandidateID', [parseInt(req.params.electionID),parseInt(req.params.electionID)], function (err, results, fields){
+  pool.query("SELECT RIGHT(LEFT(SHA(CONCAT(Votes.UserID,Systems.SystemShortName)),24),8) AS UserHash, Votes.VoteID, Votes.SystemID, Systems.SystemShortName, Votes.CandidateID, Votes.ElectionID, Votes.Position, LinkCandidatesElections.PartyID, Parties.PartyName FROM Votes LEFT JOIN LinkCandidatesElections ON Votes.CandidateID = LinkCandidatesElections.CandidateID AND LinkCandidatesElections.ElectionID = ? LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID LEFT JOIN Systems on Systems.SystemID = Votes.SystemID WHERE Votes.ElectionID = ? ORDER BY SystemID, Position, PartyID, CandidateID", [parseInt(req.params.electionID),parseInt(req.params.electionID)], function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
