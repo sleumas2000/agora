@@ -1,0 +1,7 @@
+PartyID,PartyName,PathToLogo,PartyColor
+1,Conservative,/logos/conservative.png,#0096db
+2,Labour,/logos/labour.png,#d5000d
+3,"Lib Dem",/logos/libdem.png,#faa61a
+4,SNP,/logos/snp.png,#fef48b
+5,UKIP,/logos/ukip.png,#6e3075
+6,Green,/logos/green.png,#6ab023
