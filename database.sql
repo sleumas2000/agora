@@ -1,4 +1,4 @@
-DROP DATABASE Agora;linkelectionssystems
+DROP DATABASE Agora;
 CREATE DATABASE IF NOT EXISTS Agora;
 USE Agora;
 
@@ -9,7 +9,7 @@ CREATE TABLE Users (
 	Surname varchar(50),
 	Forename varchar(50),
 	PreferredName varchar(50),
-  DisplayName varchar(100) not null
+	DisplayName varchar(100) not null
 );
 
 CREATE TABLE GroupTypes (
@@ -37,6 +37,7 @@ CREATE TABLE Parties (
 	PartyID int not null primary key auto_increment,
 	PartyName varchar(100) unique not null,
 	PathToLogo varchar(256)
+	PartyColor varchar(7)
 );
 
 CREATE TABLE Candidates (
@@ -46,7 +47,7 @@ CREATE TABLE Candidates (
 
 CREATE TABLE Systems (
 	SystemID int not null primary key auto_increment,
-  SystemShortName varchar(10) not null unique,
+	SystemShortName varchar(10) not null unique,
 	SystemName varchar(50) not null unique
 );
 

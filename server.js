@@ -305,7 +305,7 @@ app.get(API_STEM_V1+'/elections/:electionID/votes', function(req, res){
   });
 });
 app.get(API_STEM_V1+'/elections/:electionID/parties', function(req, res){
-  pool.query('SELECT Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Parties LEFT JOIN LinkCandidatesElections ON Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY PartyID', parseInt(req.params.electionID), function (err, results, fields){
+  pool.query('SELECT Parties.PartyID, Parties.PartyName, Parties.PathToLogo, Parties.PartyColor FROM Parties LEFT JOIN LinkCandidatesElections ON Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY PartyID', parseInt(req.params.electionID), function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
@@ -571,7 +571,7 @@ app.get(API_STEM_V1+'/elections/:electionID/systems', function(req, res){
   });
 });
 app.get(API_STEM_V1+'/elections/:electionID/candidates', function(req, res){
-  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY Candidates.CandidateName', req.params.electionID, function (err, results, fields){
+  pool.query('SELECT Candidates.CandidateID, Candidates.CandidateName, Parties.PartyID, Parties.PartyName, Parties.PathToLogo, Parties.PartyColor FROM Candidates RIGHT JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID LEFT JOIN Parties on Parties.PartyID = LinkCandidatesElections.PartyID WHERE LinkCandidatesElections.ElectionID = ? ORDER BY Candidates.CandidateName', req.params.electionID, function (err, results, fields){
     if (err) console.log(err);
     res.json(results);
   });
