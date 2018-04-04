@@ -544,7 +544,21 @@ app.delete(API_STEM_V1+'/systems/:systemID', function(req, res){
 app.get(API_STEM_V1+'/elections', function(req, res){
   pool.query('SELECT * FROM ELECTIONS', function (err, results, fields){
     if (err) console.log(err);
-    res.json(results);
+    var promises = []
+    for (var i in results) {
+      var p = new Promise(function(resolve,reject){
+        pool.query('SELECT Systems.SystemShortName, Systems.SystemID, Systems.SystemName FROM Systems LEFT JOIN LinkElectionsSystems ON Systems.SystemID = LinkElectionsSystems.SystemID AND ElectionID = ?', results[i].ElectionID, function (err2, results2, fields2){
+          if (err2) console.log(err2);
+          resolve(results2)
+        });
+      })
+      promises.push(p)
+    }
+    console.log(promises)
+    Promise.all(promises).then(function(values) {
+      results.map(function(self,i){self.systems = values[i];return self});
+      res.json(results);
+    })
   });
 });
 app.post(API_STEM_V1+'/elections', function(req, res){
@@ -561,7 +575,11 @@ app.post(API_STEM_V1+'/elections', function(req, res){
 app.get(API_STEM_V1+'/elections/:electionID', function(req, res){
   pool.query('SELECT * FROM ELECTIONS WHERE ELECTIONID = ?', req.params.electionID, function (err, results, fields){
     if (err) console.log(err);
-    res.json(results[0]);
+    pool.query('SELECT * FROM LinkElectionsSystems WHERE ElectionID = ?', results[0].ElectionID, function (err2, results2, fields2){
+      if (err2) console.log(err2);
+      results[0].systems=results2
+      res.json(results[0]);
+    });
   });
 });
 app.get(API_STEM_V1+'/elections/:electionID/systems', function(req, res){
