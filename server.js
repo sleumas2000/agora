@@ -547,7 +547,7 @@ app.get(API_STEM_V1+'/elections', function(req, res){
     var promises = []
     for (var i in results) {
       var p = new Promise(function(resolve,reject){
-        pool.query('SELECT Systems.SystemShortName, Systems.SystemID, Systems.SystemName FROM Systems LEFT JOIN LinkElectionsSystems ON Systems.SystemID = LinkElectionsSystems.SystemID AND ElectionID = ?', results[i].ElectionID, function (err2, results2, fields2){
+        pool.query('SELECT Systems.SystemShortName, Systems.SystemID, Systems.SystemName FROM Systems INNER JOIN LinkElectionsSystems ON Systems.SystemID = LinkElectionsSystems.SystemID AND LinkElectionsSystems.ElectionID = ?', results[i].ElectionID, function (err2, results2, fields2){
           if (err2) console.log(err2);
           resolve(results2)
         });
