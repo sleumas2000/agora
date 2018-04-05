@@ -27,7 +27,7 @@ app.use(function(req,res,next) {
     // headers["Access-Control-Allow-Origin"] = req.headers.origin;
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader("Access-Control-Allow-Headers", 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, X-HTTP-Method-Override');
+    res.setHeader("Access-Control-Allow-Headers", 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, X-HTTP-Method-Override, x-confirm-delete');
     res.end()
   } else {
     next();
@@ -554,7 +554,6 @@ app.get(API_STEM_V1+'/elections', function(req, res){
       })
       promises.push(p)
     }
-    console.log(promises)
     Promise.all(promises).then(function(values) {
       results.map(function(self,i){self.systems = values[i];return self});
       res.json(results);
@@ -562,12 +561,55 @@ app.get(API_STEM_V1+'/elections', function(req, res){
   });
 });
 app.post(API_STEM_V1+'/elections', function(req, res){
-  pool.query('INSERT INTO ELECTIONS SET ?', req.body, function(err, results, fields){
+  pool.query('INSERT INTO Elections SET ?', req.body, function(err, results, fields){
     if (err) {
       console.log(err);
       res.status(500).json(req.body)
     } else {
+      pool.query('SELECT ElectionID FROM Elections ORDER BY ElectionID DESC LIMIT 0, 1', req.body, function(err2, results2, fields2){
+        if (err2) {
+          console.log(err2);
+          res.status(500).json(req.body);
+        } else {
+          res.status(201).json({ElectionID: results2[0].ElectionID});
+        }
+      })
+    };
+  });
+});
+app.post(API_STEM_V1+'/elections/:electionID/systems/:systemIDs', function(req, res){
+  console.log(req.params.systemIDs)
+  var systems = JSON.parse(req.params.systemIDs)
+  var queryString = ""
+  for (var s in systems) {
+    queryString += "("+req.params.electionID+","+systems[s]+"),"
+  }
+  pool.query('INSERT INTO LinkElectionsSystems(ElectionID,SystemID) VALUES '+queryString.slice(0,queryString.length-1), function(err, results, fields){
+    if (err) {
+      console.log(err);
+      res.status(404).json(req.body)
+    } else {
       res.status(201).json(req.body);
+    };
+  });
+});
+app.post(API_STEM_V1+'/elections/:electionID/activate', function(req, res){
+  pool.query('UPDATE Elections SET Active = 1 WHERE ELECTIONID = ?', [req.params.electionID], function(err, results, fields){
+    if (err) {
+      console.log(err);
+      res.status(404).json(req.body)
+    } else {
+      res.status(200).json(req.body);
+    };
+  });
+});
+app.post(API_STEM_V1+'/elections/:electionID/deactivate', function(req, res){
+  pool.query('UPDATE Elections SET Active = 0 WHERE ELECTIONID = ?', [req.params.electionID], function(err, results, fields){
+    if (err) {
+      console.log(err);
+      res.status(404).json(req.body)
+    } else {
+      res.status(200).json(req.body);
     };
   });
 });

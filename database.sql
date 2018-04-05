@@ -53,7 +53,8 @@ CREATE TABLE Systems (
 
 CREATE TABLE Elections (
 	ElectionID int not null primary key auto_increment,
-	ElectionName varchar(50) unique not null
+	ElectionName varchar(50) unique not null,
+  Active bit(1) null default 1
 );
 
 CREATE TABLE Votes (
@@ -64,7 +65,7 @@ CREATE TABLE Votes (
 	SystemID int not null,
 	CandidateID int,
 	FOREIGN KEY (UserID) REFERENCES Users(UserID),
-	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
+	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
 	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
 	Position int
@@ -76,7 +77,7 @@ CREATE TABLE LinkCandidatesElections (
 	ElectionID int not null,
 	PartyID int,
 	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
-	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
+	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID),
 	UNIQUE LINK (CandidateID, ElectionID)
 );
@@ -85,7 +86,7 @@ CREATE TABLE LinkElectionsSystems (
 	LinkID int not null primary key auto_increment,
 	ElectionID int not null,
 	SystemID int not null,
-	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
+	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
 	UNIQUE LINK (ElectionID, SystemID)
 );
@@ -94,7 +95,7 @@ CREATE TABLE LinkElectionsGroups (
 	LinkID int not null primary key auto_increment,
 	ElectionID int not null,
 	GroupID int not null,
-	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID),
+	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID),
 	UNIQUE LINK (ElectionID, GroupID)
 );
