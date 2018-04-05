@@ -41,7 +41,6 @@ app.get(API_STEM_V1+'/', function(req, res){
   res.json({message: 'Hooray! API vaguely works!'});
 });
 
-
 app.get(API_STEM_V1+'/users', function(req, res){
   pool.query(  'SELECT * FROM USERS', function (err, results, fields){
     if (err) console.log(err);
@@ -525,7 +524,6 @@ app.post(API_STEM_V1+'/systems/:systemID', function(req, res){
   });
 });
 app.delete(API_STEM_V1+'/systems/:systemID', function(req, res){
-  console.log(req.body)
   if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM SYSTEMS WHERE SYSTEMID = ?', req.params.systemID, function(err, results, fields){
       if (err) {
@@ -668,5 +666,31 @@ app.delete(API_STEM_V1+'/elections/:electionID', function(req, res){
   }
 });
 
+app.get(API_STEM_V1+'/electionCandidateLinks/:electionID', function(req, res){
+  pool.query('SELECT Candidates.*, Parties.*, LinkID FROM Candidates INNER JOIN LinkCandidatesElections ON LinkCandidatesElections.CandidateID = Candidates.CandidateID AND LinkCandidatesElections.ElectionID = ? INNER JOIN Parties ON Parties.PartyID = LinkCandidatesElections.PartyID AND LinkCandidatesElections.ElectionID = ?', [req.params.electionID, req.params.electionID], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+app.post(API_STEM_V1+'/electionCandidateLinks', function(req, res){
+  pool.query('INSERT INTO LinkCandidatesElections(ElectionID,CandidateID,PartyID) VALUES (?,?,?)', [req.body.ElectionID, req.body.CandidateID, req.body.PartyID], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(req.body);
+  });
+});
+app.delete(API_STEM_V1+'/electionCandidateLinks/:id', function(req, res){
+  if (req.headers['x-confirm-delete'] == 'true') {
+    pool.query('DELETE FROM LinkCandidatesElections WHERE LinkId = ?', [req.params.id, req.params.electionID], function (err, results, fields){
+      if (err) {
+        console.log(err);
+        res.status(500).json(req.body)
+      } else {
+        res.status(201).json(req.body);
+      };
+    });
+  } else {
+    res.status(403).json(req.body);
+  }
+});
 app.listen(PORT);
 console.log("Webserver started on localhost:"+PORT)
