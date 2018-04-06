@@ -8,7 +8,7 @@ var mysql      = require('mysql');
 var pool = mysql.createPool({
   host     : 'localhost',
   user     : 'agora',
-    password : '@~fIazR*',
+  password : '@~fIazR*',
   database : 'agora'
 });
 
@@ -681,6 +681,32 @@ app.post(API_STEM_V1+'/electionCandidateLinks', function(req, res){
 app.delete(API_STEM_V1+'/electionCandidateLinks/:id', function(req, res){
   if (req.headers['x-confirm-delete'] == 'true') {
     pool.query('DELETE FROM LinkCandidatesElections WHERE LinkId = ?', [req.params.id, req.params.electionID], function (err, results, fields){
+      if (err) {
+        console.log(err);
+        res.status(500).json(req.body)
+      } else {
+        res.status(201).json(req.body);
+      };
+    });
+  } else {
+    res.status(403).json(req.body);
+  }
+});
+app.get(API_STEM_V1+'/memberships/:groupID', function(req, res){
+  pool.query('SELECT Users.*, LinkID FROM Users INNER JOIN LinkGroupsUsers ON LinkGroupsUsers.UserID = Users.UserID AND LinkGroupsUsers.GroupID = ? ', [req.params.groupID, req.params.groupID], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(results);
+  });
+});
+app.post(API_STEM_V1+'/memberships', function(req, res){
+  pool.query('INSERT INTO LinkGroupsUsers(GroupID,UserID) VALUES (?,?)', [req.body.GroupID, req.body.UserID], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(req.body);
+  });
+});
+app.delete(API_STEM_V1+'/memberships/:id', function(req, res){
+  if (req.headers['x-confirm-delete'] == 'true') {
+    pool.query('DELETE FROM LinkGroupsUsers WHERE LinkId = ?', [req.params.id, req.params.electionID], function (err, results, fields){
       if (err) {
         console.log(err);
         res.status(500).json(req.body)
