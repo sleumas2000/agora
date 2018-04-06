@@ -37,7 +37,7 @@ CREATE TABLE Parties (
 	PartyID int not null primary key auto_increment,
 	PartyName varchar(100) unique not null,
 	PathToLogo varchar(256)
-	PartyColor varchar(7)
+	PartyColor varchar(32) default '#808080'
 );
 
 CREATE TABLE Candidates (
