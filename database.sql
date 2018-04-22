@@ -21,22 +21,22 @@ CREATE TABLE Groups (
 	GroupID int not null primary key auto_increment,
 	GroupName varchar(50) unique not null,
 	GroupTypeID int,
-	FOREIGN KEY (GroupTypeID) REFERENCES GroupTypes(GroupTypeID)
+	FOREIGN KEY (GroupTypeID) REFERENCES GroupTypes(GroupTypeID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE LinkGroupsUsers (
 	LinkID int not null primary key auto_increment,
 	GroupID int not null,
 	UserID int not null,
-	FOREIGN KEY (GroupID) REFERENCES Groups(GroupID),
-	FOREIGN KEY (UserID) REFERENCES Users(UserID),
+	FOREIGN KEY (GroupID) REFERENCES Groups(GroupID) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
 	UNIQUE LINK (GroupID, UserID)
 );
 
 CREATE TABLE Parties (
 	PartyID int not null primary key auto_increment,
 	PartyName varchar(100) unique not null,
-	PathToLogo varchar(256)
+	PathToLogo varchar(256),
 	PartyColor varchar(32) default '#808080'
 );
 
@@ -64,10 +64,10 @@ CREATE TABLE Votes (
 	ElectionID int not null,
 	SystemID int not null,
 	CandidateID int,
-	FOREIGN KEY (UserID) REFERENCES Users(UserID),
+	FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
-	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
+	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID) ON DELETE CASCADE ON UPDATE CASCADE,
 	Position int
 );
 
@@ -76,9 +76,9 @@ CREATE TABLE LinkCandidatesElections (
 	CandidateID int not null,
 	ElectionID int not null,
 	PartyID int,
-	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID),
+	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID),
+	FOREIGN KEY (PartyID) REFERENCES Parties(PartyID) ON DELETE CASCADE ON UPDATE CASCADE,
 	UNIQUE LINK (CandidateID, ElectionID)
 );
 
@@ -87,7 +87,7 @@ CREATE TABLE LinkElectionsSystems (
 	ElectionID int not null,
 	SystemID int not null,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID),
+	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID) ON DELETE CASCADE ON UPDATE CASCADE,
 	UNIQUE LINK (ElectionID, SystemID)
 );
 
@@ -96,6 +96,6 @@ CREATE TABLE LinkElectionsGroups (
 	ElectionID int not null,
 	GroupID int not null,
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID),
+	FOREIGN KEY (GroupID) REFERENCES Groups(GroupTypeID) ON DELETE CASCADE ON UPDATE CASCADE,
 	UNIQUE LINK (ElectionID, GroupID)
 );
