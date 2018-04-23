@@ -9,7 +9,8 @@ CREATE TABLE Users (
 	Surname varchar(50),
 	Forename varchar(50),
 	PreferredName varchar(50),
-	DisplayName varchar(100) not null
+	DisplayName varchar(100) not null,
+	IsAdmin bit(1) null default 0
 );
 
 CREATE TABLE GroupTypes (
