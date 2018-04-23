@@ -836,8 +836,7 @@ jwtapi.post('/authenticate', function(req,res) {
 
 function authenticateJWTs(req, res, next) {
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
-  console.log(req.body,req.headers)
-  console.log(token)
+  console.log(token,req.url)
   if (token) {
     if (token == "123Wells909") {req.user={userID: 0, userName: 'Admin', displayName: 'Admin', isAdmin: true};next();return}
     jwt.verify(token, app.get('jwtSecret'), function(err, decoded) {
