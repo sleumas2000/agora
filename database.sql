@@ -51,6 +51,16 @@ CREATE TABLE Systems (
 	SystemName varchar(50) not null unique
 );
 
+INSERT INTO Systems
+	(SystemShortName, SystemName)
+VALUES
+	("fptp","First Past the Post"),
+	("av","Alternative Vote"),
+	("stv","Single Transferable Vote"),
+	("pr","Party List Proportional Representation"),
+	("sv","Suppelementary Vote")
+;
+
 CREATE TABLE Elections (
 	ElectionID int not null primary key auto_increment,
 	ElectionName varchar(50) unique not null,
