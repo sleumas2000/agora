@@ -10,7 +10,9 @@ CREATE TABLE Users (
 	Forename varchar(50),
 	PreferredName varchar(50),
 	DisplayName varchar(100) not null,
-	IsAdmin bit(1) null default 0
+	IsAdmin bit(1) null default 0,
+	PasswordHash varchar(64),
+	PasswordSalt varchar(16)
 );
 
 CREATE TABLE GroupTypes (

@@ -800,8 +800,20 @@ app.use(API_STEM_V1,api)
     res.json(results);
   });
 });*/
-jwtapi.get('/users/:userID', function(req, res) {
-  pool.query('SELECT UserID, UserName, DisplayName FROM Users WHERE UserID = ?', req.params.userID, function (err, results, fields){
+api.post('/users/:userID/password', function(req, res){
+  if (!req.user.isAdmin) {
+    return res.status(403).json({success: false, message: "You do not have admin rights"})
+  }
+  let salt=crypto.randomBytes(8).toString('hex')
+  let passwordHash = hash(req.body.password,salt)
+  console.log(req.body.password,salt,passwordHash)
+  pool.query('UPDATE Users SET PasswordHash = ?, PasswordSalt = ? WHERE UserID = ?', [passwordHash,salt,req.params.userID], function (err, results, fields){
+    if (err) console.log(err);
+    res.json(req.body);
+  });
+});
+jwtapi.get('/users/:userName', function(req, res) {
+  pool.query('SELECT UserID, UserName, DisplayName FROM Users WHERE UserName = ?', req.params.userName, function (err, results, fields){
     if (err) console.log(err);
     res.json(results[0]);
   });
@@ -809,12 +821,22 @@ jwtapi.get('/users/:userID', function(req, res) {
 app.set('jwtSecret','suprsecret')
 jwtapi.post('/authenticate', function(req,res) {
   console.log(req.body)
-  pool.query('SELECT UserName, Email, UserID, IsAdmin FROM Users WHERE UserName = ?', req.body.UserName, function(err, results, fields){
+  if (!req.body.UserName) {
+    return res.json({ success: false, message: 'Authentication Failed. No username specified' });
+  }
+  pool.query('SELECT UserName, Email, UserID, IsAdmin, PasswordHash, PasswordSalt FROM Users WHERE UserName = ?', req.body.UserName, function(err, results, fields){
     if (err) console.log(err);
-    var user = results[0]
+    if (results.length > 0) {
+      var user = results[0]
+    } else {
+      var user
+    }
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else {
+      if (!req.body.Password || hash(req.body.Password,user.PasswordSalt) != user.PasswordHash) {
+        return res.json({ success: false, message: 'Authentication failed. Password Mismatch.' });
+      }
       const payload = {
         userName: user.UserName,
         userID: user.UserID,
@@ -853,6 +875,12 @@ function authenticateJWTs(req, res, next) {
         message: 'No token provided.'
     });
   }
+}
+
+const crypto = require('crypto')
+function hash(password,salt) {
+  var shasum = crypto.createHash('sha1');
+  return shasum.update(salt).update(password).digest('hex');
 }
 
 app.use(JWT_STEM_V1,jwtapi)
