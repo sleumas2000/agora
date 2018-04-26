@@ -581,7 +581,25 @@ api.delete('/systems/:systemID', function(req, res){
   }
 });
 
-
+api.get('/elections/active', function(req, res){
+  pool.query('SELECT * FROM ELECTIONS WHERE Active = 1', function (err, results, fields){
+    if (err) console.log(err);
+    var promises = []
+    for (var i in results) {
+      var p = new Promise(function(resolve,reject){
+        pool.query('SELECT Systems.SystemShortName, Systems.SystemID, Systems.SystemName FROM Systems INNER JOIN LinkElectionsSystems ON Systems.SystemID = LinkElectionsSystems.SystemID AND LinkElectionsSystems.ElectionID = ?', results[i].ElectionID, function (err2, results2, fields2){
+          if (err2) console.log(err2);
+          resolve(results2)
+        });
+      })
+      promises.push(p)
+    }
+    Promise.all(promises).then(function(values) {
+      results.map(function(self,i){self.systems = values[i];return self});
+      res.json(results);
+    })
+  });
+});
 api.get('/elections', function(req, res){
   pool.query('SELECT * FROM ELECTIONS', function (err, results, fields){
     if (err) console.log(err);
