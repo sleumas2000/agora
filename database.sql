@@ -81,7 +81,8 @@ CREATE TABLE Votes (
 	FOREIGN KEY (ElectionID) REFERENCES Elections(ElectionID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (SystemID) REFERENCES Systems(SystemID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (CandidateID) REFERENCES Candidates(CandidateID) ON DELETE CASCADE ON UPDATE CASCADE,
-	Position int
+	Position int,
+	UNIQUE LINK (UserID, ElectionID, SystemID, Position)
 );
 
 CREATE TABLE LinkCandidatesElections (

@@ -349,7 +349,7 @@ api.get('/elections/:electionID/votes/group/:groupID', function(req, res){
 });
 
 api.post('/elections/:electionID/systems/:systemShortName/votes/user/:userID', function(req, res){
-  console.log(req.params.userID,req.user)
+  if (req.params.userID != req.user.userID) {console.log(req.params.userID,"(request) !=",req.user.userID,"(token)");return res.status(403).json({'success': 'false', 'message': 'You are not signed in as the user in whose name you are trying to vote'})}
   pool.query('SELECT SystemID FROM Systems WHERE SystemShortName = ?', req.params.systemShortName, function(err, results, fields) {
     if (results.length != 1 || typeof(results[0].SystemID) == 'undefined') {
       res.status(404).json(req.body);
@@ -362,7 +362,7 @@ api.post('/elections/:electionID/systems/:systemShortName/votes/user/:userID', f
     pool.query('INSERT INTO Votes SET UserID = ?, ElectionID = ?, SystemID = ?, ?', [parseInt(req.params.userID), parseInt(req.params.electionID), parseInt(results[0].SystemID), req.body], function(err, results, fields){
       if (err) {
         console.log(err);
-        res.status(409).json(req.body);
+        res.status(409).json(err);
       } else {
         res.status(201).json(req.body);
       }
@@ -858,7 +858,6 @@ jwtapi.post('/authenticate', function(req,res) {
 
 function authenticateJWTs(req, res, next) {
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
-  console.log(token,req.url)
   if (token) {
     if (token == "123Wells909") {req.user={userID: 0, userName: 'Admin', displayName: 'Admin', isAdmin: true};next();return}
     jwt.verify(token, app.get('jwtSecret'), function(err, decoded) {
