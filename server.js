@@ -896,7 +896,7 @@ function authenticateJWTs(req, res, next) {
 
 const crypto = require('crypto')
 function hash(password,salt) {
-  var shasum = crypto.createHash('sha1');
+  var shasum = crypto.createHash('sha256');
   return shasum.update(salt).update(password).digest('hex');
 }
 
