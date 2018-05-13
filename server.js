@@ -119,10 +119,14 @@ function authenticateJWTs(req, res, next) {
       }
     });
   } else {
-    return res.status(403).send({
+    if (req.url.indexOf("/api/auth/") == 0) {
+      next()
+    } else {
+      return res.status(403).send({
         success: false,
         message: 'No token provided.'
-    });
+      });
+    }
   }
 }
 
