@@ -314,4 +314,9 @@ api.post('/users/:userID/password', function(req, res){
   });
 });
 
+function hash(password,salt) {
+  var shasum = require('crypto').createHash('sha256');
+  return shasum.update(salt).update(password).digest('hex');
+}
+
 module.exports = api
