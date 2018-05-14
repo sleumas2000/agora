@@ -305,7 +305,7 @@ api.post('/users/:userID/password', function(req, res){
   if (!req.user.isAdmin) {
     return res.status(403).json({success: false, message: "You do not have admin rights"})
   }
-  let salt=crypto.randomBytes(8).toString('hex')
+  let salt=require('crypto').randomBytes(8).toString('hex')
   let passwordHash = hash(req.body.password,salt)
   console.log(req.body.password,salt,passwordHash)
   pool.query('UPDATE Users SET PasswordHash = ?, PasswordSalt = ? WHERE UserID = ?', [passwordHash,salt,req.params.userID], function (err, results, fields){
@@ -313,5 +313,10 @@ api.post('/users/:userID/password', function(req, res){
     res.json(req.body);
   });
 });
+
+function hash(password,salt) {
+  var shasum = require('crypto').createHash('sha256');
+  return shasum.update(salt).update(password).digest('hex');
+}
 
 module.exports = api
